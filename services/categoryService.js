@@ -1,6 +1,6 @@
 const slugify = require("slugify");
 const asyncHandler = require("express-async-handler");
-const CategoryModel = require("../models/categoryModel");
+const Category = require("../models/category");
 
 // @desc    Get list of categories
 // @route   GET /api/v1/categories
@@ -9,7 +9,7 @@ exports.getCategories = asyncHandler(async (req, res) => {
   const page = req.query.page * 1 || 1;
   const limit = req.query.limit * 1 || 5;
   const skip = (page - 1) * limit;
-  const categories = await CategoryModel.find({}).skip(skip).limit(limit);
+  const categories = await Category.find({}).skip(skip).limit(limit);
   res.status(200).json({ results: categories.length, page, data: categories });
 });
 
@@ -18,7 +18,7 @@ exports.getCategories = asyncHandler(async (req, res) => {
 // @access  Public
 exports.getCategory = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const category = await CategoryModel.findById(id);
+  const category = await Category.findById(id);
 
   if (!category) {
     res.status(404).json({ msg: `No category for this id ${id}` });
@@ -31,7 +31,7 @@ exports.getCategory = asyncHandler(async (req, res) => {
 // @access  Private
 exports.createCategory = asyncHandler(async (req, res) => {
   const name = req.body.name;
-  const category = await CategoryModel.create({
+  const category = await Category.create({
     name,
     slug: slugify(name),
   });
@@ -45,7 +45,7 @@ exports.updateCategory = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const { name } = req.body;
 
-  const category = await CategoryModel.findOneAndUpdate(
+  const category = await Category.findOneAndUpdate(
     { _id: id },
     { name, slug: slugify(name) },
     { new: true }
@@ -62,7 +62,7 @@ exports.updateCategory = asyncHandler(async (req, res) => {
 // @access  Private
 exports.deleteCategory = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const category = await CategoryModel.findByIdAndDelete(id);
+  const category = await Category.findByIdAndDelete(id);
 
   if (!category) {
     res.status(404).json({ msg: `No category for this id ${id}` });
