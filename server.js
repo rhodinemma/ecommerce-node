@@ -22,6 +22,12 @@ if (process.env.NODE_ENV === "development") {
 // mount routes
 app.use("/api/v1/categories", categoryRoute);
 
+app.all("*", (req, res, next) => {
+  // create error and send it to error handling middleware
+  const err = new Error(`Can't find this route: ${req.originalUrl}`);
+  next(err.message);
+});
+
 // global error handling middleware
 app.use((err, req, res, next) => {
   res.status(500).json({ err });
