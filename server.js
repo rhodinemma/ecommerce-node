@@ -1,11 +1,28 @@
 const express = require("express");
+const dotenv = require("dotenv");
+const morgan = require("morgan");
+const databaseConnection = require("./config/database");
+const categoryRoute = require("./routes/categoryRoute");
 
+dotenv.config({ path: "config.env" });
+// connect with database
+databaseConnection();
+
+// initialize express application
 const app = express();
 
-app.get("/", (req, res) => {
-  res.send("Our API");
-});
+// middlewares
+app.use(express.json());
 
-app.listen(8000, () => {
-  console.log("Server running on port 8000");
+if (process.env.NODE_ENV === "development") {
+  app.use(morgan("dev"));
+  console.log(`mode: ${process.env.NODE_ENV}`);
+}
+
+// mount routes
+app.use("/api/v1/categories", categoryRoute);
+
+const PORT = process.env.PORT;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
