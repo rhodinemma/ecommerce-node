@@ -23,7 +23,10 @@ exports.getSubCategories = asyncHandler(async (req, res) => {
   const page = req.query.page * 1 || 1;
   const limit = req.query.limit * 1 || 5;
   const skip = (page - 1) * limit;
-  const subCategories = await SubCategory.find({}).skip(skip).limit(limit);
+  const subCategories = await SubCategory.find({})
+    .skip(skip)
+    .limit(limit)
+    .populate({ path: "category", select: "name -_id" });
   res
     .status(200)
     .json({ results: subCategories.length, page, data: subCategories });
@@ -34,7 +37,10 @@ exports.getSubCategories = asyncHandler(async (req, res) => {
 // @access  Public
 exports.getSubCategory = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
-  const subCategory = await SubCategory.findById(id);
+  const subCategory = await SubCategory.findById(id).populate({
+    path: "category",
+    select: "name -_id",
+  });
 
   if (!subCategory) {
     return next(new ApiError(`No category for this id ${id}`, 404));
