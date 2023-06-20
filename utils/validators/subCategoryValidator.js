@@ -22,12 +22,12 @@ exports.createSubCategoryValidator = [
   validationMiddleware,
 ];
 
-// exports.updateSubCategoryValidator = [
-//   check("id").isMongoId().withMessage("Invalid subCategory ID format"),
-//   validationMiddleware,
-// ];
+exports.updateSubCategoryValidator = [
+  check("id").isMongoId().withMessage("Invalid subCategory ID format"),
+  validationMiddleware,
+];
 
-// exports.deleteSubCategoryValidator = [
-//   check("id").isMongoId().withMessage("Invalid subCategory ID format"),
-//   validationMiddleware,
-// ];
+exports.deleteSubCategoryValidator = [
+  check("id").isMongoId().withMessage("Invalid subCategory ID format"),
+  validationMiddleware,
+];
