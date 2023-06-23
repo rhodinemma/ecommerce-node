@@ -18,7 +18,7 @@ exports.getProducts = asyncHandler(async (req, res) => {
 
   // 2) Pagination
   const page = req.query.page * 1 || 1;
-  const limit = req.query.limit * 1 || 5;
+  const limit = req.query.limit * 1 || 50;
   const skip = (page - 1) * limit;
 
   // Build query
@@ -34,6 +34,14 @@ exports.getProducts = asyncHandler(async (req, res) => {
     mongooseQuery = mongooseQuery.sort(sortBy);
   } else {
     mongooseQuery = mongooseQuery.sort("-createdAt");
+  }
+
+  // 4) Fields limiting
+  if (req.query.fields) {
+    const fields = req.query.fields.split(",").join(" ");
+    mongooseQuery = mongooseQuery.select(fields);
+  } else {
+    mongooseQuery = mongooseQuery.select("-__v");
   }
 
   // Execute query
