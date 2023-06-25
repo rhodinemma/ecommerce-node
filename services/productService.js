@@ -1,4 +1,3 @@
-const slugify = require("slugify");
 const asyncHandler = require("express-async-handler");
 const Product = require("../models/product");
 const ApiError = require("../utils/apiError");
@@ -42,11 +41,7 @@ exports.getProduct = asyncHandler(async (req, res, next) => {
 // @desc    Create product
 // @route   POST /api/v1/products
 // @access  Private
-exports.createProduct = asyncHandler(async (req, res) => {
-  req.body.slug = slugify(req.body.title);
-  const product = await Product.create(req.body);
-  res.status(201).json({ data: product });
-});
+exports.createProduct = factory.createOne(Product);
 
 // @desc    Update specific product
 // @route   PUT /api/v1/products/:id

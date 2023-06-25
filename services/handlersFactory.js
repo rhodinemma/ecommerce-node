@@ -1,6 +1,6 @@
 const asyncHandler = require("express-async-handler");
 const ApiError = require("../utils/apiError");
-const ApiFeatures = require("../utils/apiFeatures");
+//const ApiFeatures = require("../utils/apiFeatures");
 
 exports.deleteOne = (Model) =>
   asyncHandler(async (req, res, next) => {
@@ -25,4 +25,10 @@ exports.updateOne = (Model) =>
       );
     }
     res.status(200).json({ data: document });
+  });
+
+exports.createOne = (Model) =>
+  asyncHandler(async (req, res) => {
+    const newDocument = await Model.create(req.body);
+    res.status(201).json({ data: newDocument });
   });
