@@ -1,22 +1,28 @@
+/* eslint-disable node/no-extraneous-require */
 /* eslint-disable import/no-extraneous-dependencies */
 const multer = require("multer");
+const sharp = require("sharp");
 const { v4: uuidv4 } = require("uuid");
+const asyncHandler = require("express-async-handler");
 const Category = require("../models/category");
 const factory = require("./handlersFactory");
 const ApiError = require("../utils/apiError");
 
 // 1- DiskStorage
-const multerStorage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "uploads/categories");
-  },
-  filename: function (req, file, cb) {
-    // category-${id}-Date.now().jpeg
-    const ext = file.mimetype.split("/")[1];
-    const filename = `category-${uuidv4()}-${Date.now()}.${ext}`;
-    cb(null, filename);
-  },
-});
+// const multerStorage = multer.diskStorage({
+//   destination: function (req, file, cb) {
+//     cb(null, "uploads/categories");
+//   },
+//   filename: function (req, file, cb) {
+//     // category-${id}-Date.now().jpeg
+//     const ext = file.mimetype.split("/")[1];
+//     const filename = `category-${uuidv4()}-${Date.now()}.${ext}`;
+//     cb(null, filename);
+//   },
+// });
+
+// 2 - Memory Storage engine
+const multerStorage = multer.memoryStorage();
 
 const multerFilter = function (req, file, cb) {
   if (file.mimetype.startsWith("image")) {
@@ -29,6 +35,18 @@ const multerFilter = function (req, file, cb) {
 const upload = multer({ storage: multerStorage, fileFilter: multerFilter });
 
 exports.uploadCategoryImage = upload.single("image");
+
+exports.resizeImage = asyncHandler(async (req, res, next) => {
+  console.log(req.file);
+  const filename = `category-${uuidv4()}-${Date.now()}.jpeg`;
+  await sharp(req.file.buffer)
+    .resize(600, 600)
+    .toFormat("jpeg")
+    .jpeg({ quality: 90 })
+    .toFile(`uploads/categories/${filename}`);
+
+  next();
+});
 
 // @desc    Get list of categories
 // @route   GET /api/v1/categories
