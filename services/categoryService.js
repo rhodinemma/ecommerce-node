@@ -1,12 +1,11 @@
 /* eslint-disable node/no-extraneous-require */
 /* eslint-disable import/no-extraneous-dependencies */
-const multer = require("multer");
 const sharp = require("sharp");
 const { v4: uuidv4 } = require("uuid");
 const asyncHandler = require("express-async-handler");
 const Category = require("../models/category");
 const factory = require("./handlersFactory");
-const ApiError = require("../utils/apiError");
+const { uploadSingleImage } = require("../middlewares/uploadImageMiddleware");
 
 // 1- DiskStorage
 // const multerStorage = multer.diskStorage({
@@ -22,19 +21,19 @@ const ApiError = require("../utils/apiError");
 // });
 
 // 2 - Memory Storage engine
-const multerStorage = multer.memoryStorage();
+// const multerStorage = multer.memoryStorage();
 
-const multerFilter = function (req, file, cb) {
-  if (file.mimetype.startsWith("image")) {
-    cb(null, true);
-  } else {
-    cb(new ApiError(`Only Images allowed`, 400), false);
-  }
-};
+// const multerFilter = function (req, file, cb) {
+//   if (file.mimetype.startsWith("image")) {
+//     cb(null, true);
+//   } else {
+//     cb(new ApiError(`Only Images allowed`, 400), false);
+//   }
+// };
 
-const upload = multer({ storage: multerStorage, fileFilter: multerFilter });
+// const upload = multer({ storage: multerStorage, fileFilter: multerFilter });
 
-exports.uploadCategoryImage = upload.single("image");
+exports.uploadCategoryImage = uploadSingleImage("image");
 
 exports.resizeImage = asyncHandler(async (req, res, next) => {
   const filename = `category-${uuidv4()}-${Date.now()}.jpeg`;
